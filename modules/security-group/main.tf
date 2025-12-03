@@ -17,12 +17,12 @@ resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
   ip_protocol       = "tcp"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_postgres_my_ip" {
-  security_group_id = aws_security_group.rds_sg.id
-  cidr_ipv4         = "177.124.11.204/32"
-  from_port         = var.from_port
-  to_port           = var.to_port
-  ip_protocol       = "tcp"
+resource "aws_vpc_security_group_ingress_rule" "allow_rds_self" {
+  security_group_id            = aws_security_group.rds_sg.id
+  referenced_security_group_id = aws_security_group.rds_sg.id
+  from_port                    = var.from_port
+  to_port                      = var.to_port
+  ip_protocol                  = "tcp"
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {

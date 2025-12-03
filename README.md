@@ -16,10 +16,11 @@ infra-database-fase4/
 │── main.tf                # Configuração principal e orquestração dos módulos
 │── variables.tf           # Variáveis globais do projeto
 │── terraform.tfvars       # Valores das variáveis (exceto secrets)
-│── providers.tf           # Provider AWS
+│── providers.tf           # Providers necessários (AWS, PostgreSQL)
 │── datasource.tf          # Data source para estados remotos
 │── backend.tf             # Configuração do backend remoto S3
 │── modules/               # Módulos reutilizáveis
+│   ├── postgres/          # Módulo de criação de databases PostgreSQL
 │   ├── rds/               # Módulo de RDS
 │   ├── security-group/    # Módulo de Security Group
 │   └── secrets-manager/   # Módulo de Secrets Manager
@@ -29,10 +30,11 @@ infra-database-fase4/
 
 ## ⚙️ Pré-requisitos
 
-- [Terraform >= 1.5](https://developer.hashicorp.com/terraform/downloads)
+- [Terraform >= 1.6](https://developer.hashicorp.com/terraform/downloads)
 - AWS CLI configurado
-- VPC e subnets privadas já provisionadas [infra-foundation-fase4](https://github.com/FIAP-SOAT-G129/infra-foundation-fase4)
-- Secrets para credenciais do banco (usuário/senha/nome do banco)
+- VPC e subnets privadas já provisionadas [infra-database-fase4](https://github.com/FIAP-SOAT-G129/infra-database-fase4)
+- Secrets para credenciais da instancia RDS (usuário/senha)
+- Secrets para credenciais dos bancos (usuário/senha/nome do banco)
 
 ---
 
@@ -84,9 +86,22 @@ A configuração completa está no arquivo `backend.tf`.
 Exemplo de `secrets.tfvars`:
 
 ```hcl
-db_name = "fastfood_db"
-db_username = "fastfood_admin"
-db_password = "Fastfood-Senha#Segura$123"
+master_username = "admin_user"
+
+master_password = "Senha-Segura$123!"
+
+databases = {
+  db_1 = {
+    username = "db1_user"
+    password = "db1Senha@123"
+  }
+
+  db_2 = {
+    username = "db2_user"
+    password = "db2Senha@123"
+  }
+}
+
 ```
 
 ## 🏗️ Pipeline de Automação
@@ -95,16 +110,10 @@ O projeto utiliza pipelines CI/CD no GitHub Actions para garantir a automação,
 
 - **fmt-validate.yml**: Executa `terraform fmt` e `terraform validate` em todos os PRs e pushes, garantindo que o código esteja formatado e válido antes de ser aplicado.
 
-- **plan.yml**: Gera o plano de execução do Terraform (`terraform plan`) para cada alteração, permitindo revisão prévia das mudanças que serão aplicadas na infraestrutura.
-
 - **apply.yml**: Aplica as alterações aprovadas na infraestrutura (`terraform apply`) após revisão e aprovação do plano.
 
 - **destroy.yml**: Automatiza a destruição dos recursos provisionados, geralmente utilizado para ambientes temporários ou de testes.
   
-- **destroy-terraform.yml**: Realiza a destruição controlada dos recursos via Terraform, garantindo limpeza segura e rastreável do ambiente.
-
-- **terraform.yml**: Workflow principal de integração contínua, podendo orquestrar validação, plano, aplicação e notificações.
-
 ### Benefícios da automação
 
 - Reduz erros manuais e aumenta a rastreabilidade
