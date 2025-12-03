@@ -5,7 +5,7 @@ module "rds" {
   master_username    = var.master_username
   master_password    = var.master_password
   security_group_ids = [module.security_group.id]
-  subnet_ids         = data.terraform_remote_state.foundation.outputs.private_subnet_ids
+  subnet_ids         = data.terraform_remote_state.foundation.outputs.public_subnet_ids
 
   tags = var.tags
 }
