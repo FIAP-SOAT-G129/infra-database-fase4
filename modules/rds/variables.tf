@@ -20,17 +20,12 @@ variable "storage" {
   default     = 20
 }
 
-variable "db_name" {
-  type        = string
-  description = "Name of the database"
-}
-
-variable "db_username" {
+variable "master_username" {
   type        = string
   description = "Database username"
 }
 
-variable "db_password" {
+variable "master_password" {
   type        = string
   description = "Database password"
 }

@@ -1,29 +1,37 @@
 variable "name" {
-  type        = string
   description = "Base name for resources"
-}
-
-variable "db_name" {
   type        = string
-  description = "Database name"
 }
 
 variable "db_host" {
-  type        = string
   description = "Database host"
+  type        = string
 }
 
 variable "db_port" {
-  type        = number
   description = "Database port"
+  type        = number
 }
 
-variable "db_username" {
+variable "db_master_username" {
+  description = "Database master username"
   type        = string
-  description = "Database username"
 }
 
-variable "db_password" {
+variable "db_master_password" {
+  description = "Database master password"
   type        = string
-  description = "Database password"
+}
+
+variable "databases" {
+  description = "Map of database names to their passwords"
+  type = map(object({
+    username = string
+    password = string
+  }))
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }

@@ -8,19 +8,22 @@ variable "region" {
   type        = string
 }
 
-variable "db_name" {
-  description = "Nome do banco de dados"
+variable "master_username" {
+  description = "Database master username"
   type        = string
 }
 
-variable "db_username" {
-  description = "Database username"
+variable "master_password" {
+  description = "Database master password"
   type        = string
 }
 
-variable "db_password" {
-  description = "Database password"
-  type        = string
+variable "databases" {
+  description = "Map of database names to their credentials"
+  type = map(object({
+    username = string
+    password = string
+  }))
 }
 
 variable "tags" {

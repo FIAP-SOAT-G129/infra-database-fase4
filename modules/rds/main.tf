@@ -1,12 +1,13 @@
 resource "aws_db_instance" "this" {
-  identifier              = "${var.name}-${var.db_name}"
-  allocated_storage       = var.storage
-  engine                  = data.aws_rds_engine_version.postgres.engine
-  engine_version          = data.aws_rds_engine_version.postgres.version
-  instance_class          = var.instance
-  db_name                 = var.db_name
-  username                = var.db_username
-  password                = var.db_password
+  identifier        = "${var.name}-db"
+  allocated_storage = var.storage
+  engine            = data.aws_rds_engine_version.postgres.engine
+  engine_version    = data.aws_rds_engine_version.postgres.version
+  instance_class    = var.instance
+
+  username = var.master_username
+  password = var.master_password
+
   parameter_group_name    = data.aws_db_parameter_group.postgres.name
   skip_final_snapshot     = true
   publicly_accessible     = true
@@ -16,7 +17,7 @@ resource "aws_db_instance" "this" {
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-fastfood-db" }
+    { Name = "${var.name}-db" }
   )
 }
 
