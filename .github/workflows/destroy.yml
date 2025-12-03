@@ -1,23 +1,11 @@
-name: Terraform Destroy
+name: Terraform Destroy Pipeline
+
+concurrency:
+  group: terraform-destroy-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
-  workflow_call:
-    inputs:
-      tf_version:
-        description: 'Terraform version'
-        required: true
-        type: string
-      aws_region:
-        description: 'AWS region'
-        required: true
-        type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-      DB_TFVARS:
-        required: true
+  workflow_dispatch:
 
 jobs:
   destroy:
@@ -29,22 +17,22 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws_region }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ inputs.tf_version }}
-
-      - name: Terraform Init
-        run: terraform init
+          terraform_version: ${{ vars.TF_VERSION }}
 
       - name: Create secrets.tfvars
         run: |
-          echo '${{ secrets.DB_TFVARS }}' > secrets.tfvars
+          printf '%s' "${{ secrets.DB_TFVARS }}" > secrets.tfvars
+
+      - name: Terraform Init
+        run: terraform init -input=false
 
       - name: Terraform Destroy
-        run: | 
+        run: |
           terraform destroy \
            -input=false \
            -var-file="secrets.tfvars" \

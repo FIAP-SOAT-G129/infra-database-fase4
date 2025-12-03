@@ -1,24 +1,23 @@
-name: Terraform Apply
+name: Terraform Apply Pipeline
+
+concurrency:
+  group: terraform-apply-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
-  workflow_call:
-    inputs:
-      tf_version:
-        required: true
-        type: string
-      aws_region:
-        required: true
-        type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-      DB_TFVARS:
-        required: true
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  apply:
+  fmt-validate:
+    uses: ./.github/workflows/fmt-validate.yml
+    with:
+      tf_version: ${{ vars.TF_VERSION }}
+
+  plan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,23 +27,69 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws_region }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ inputs.tf_version }}
+          terraform_version: ${{ vars.TF_VERSION }}
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Create secrets.tfvars
         run: |
-          echo '${{ secrets.DB_TFVARS }}' > secrets.tfvars
+          printf '%s' "${{ secrets.DB_TFVARS }}" > secrets.tfvars
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+            -input=false \
+            -var-file="secrets.tfvars" \
+            -out=tfplan
+
+      - name: Upload Terraform Plan Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: tfplan
+
+  apply:
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ vars.TF_VERSION }}
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+
+      - name: Create secrets.tfvars
+        run: |
+          printf '%s' "${{ secrets.DB_TFVARS }}" > secrets.tfvars
+
+      - name: Terraform Init
+        run: terraform init -input=false
 
       - name: Terraform Apply
         run: |
           terraform apply \
+            tfplan \
             -input=false \
             -auto-approve \
             -var-file="secrets.tfvars"
