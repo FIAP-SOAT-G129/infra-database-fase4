@@ -80,17 +80,12 @@ jobs:
         with:
           name: tfplan
 
-      - name: Create secrets.tfvars
-        run: |
-          echo '${{ secrets.DB_TFVARS }}' > secrets.tfvars
-
       - name: Terraform Init
         run: terraform init -input=false
 
       - name: Terraform Apply
         run: |
           terraform apply \
-            tfplan \
             -input=false \
             -auto-approve \
-            -var-file="secrets.tfvars"
+            tfplan
