@@ -20,14 +20,12 @@ variable "storage" {
   default     = 20
 }
 
-variable "master_username" {
-  type        = string
-  description = "Database username"
-}
-
-variable "master_password" {
-  type        = string
-  description = "Database password"
+variable "databases" {
+  description = "Map of databases to their credentials"
+  type = map(object({
+    username = string
+    password = string
+  }))
 }
 
 variable "security_group_ids" {

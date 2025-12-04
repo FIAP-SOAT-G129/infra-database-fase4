@@ -16,11 +16,10 @@ infra-database-fase4/
 │── main.tf                # Configuração principal e orquestração dos módulos
 │── variables.tf           # Variáveis globais do projeto
 │── terraform.tfvars       # Valores das variáveis (exceto secrets)
-│── providers.tf           # Providers necessários (AWS, PostgreSQL)
+│── providers.tf           # Providers necessários (AWS)
 │── datasource.tf          # Data source para estados remotos
 │── backend.tf             # Configuração do backend remoto S3
 │── modules/               # Módulos reutilizáveis
-│   ├── postgres/          # Módulo de criação de databases PostgreSQL
 │   ├── rds/               # Módulo de RDS
 │   ├── security-group/    # Módulo de Security Group
 │   └── secrets-manager/   # Módulo de Secrets Manager
@@ -86,10 +85,6 @@ A configuração completa está no arquivo `backend.tf`.
 Exemplo de `secrets.tfvars`:
 
 ```hcl
-master_username = "admin_user"
-
-master_password = "Senha-Segura$123!"
-
 databases = {
   db_1 = {
     username = "db1_user"
