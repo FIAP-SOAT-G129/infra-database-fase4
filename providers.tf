@@ -6,23 +6,9 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.47.0"
     }
-
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "1.26.0"
-    }
   }
 }
 
 provider "aws" {
   region = var.region
-}
-
-provider "postgresql" {
-  host     = module.rds.address
-  port     = module.rds.port
-  username = var.master_username
-  password = var.master_password
-
-  superuser = false
 }

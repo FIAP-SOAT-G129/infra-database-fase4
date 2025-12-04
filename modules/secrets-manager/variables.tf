@@ -3,29 +3,12 @@ variable "name" {
   type        = string
 }
 
-variable "db_host" {
-  description = "Database host"
-  type        = string
-}
-
-variable "db_port" {
-  description = "Database port"
-  type        = number
-}
-
-variable "db_master_username" {
-  description = "Database master username"
-  type        = string
-}
-
-variable "db_master_password" {
-  description = "Database master password"
-  type        = string
-}
-
-variable "databases" {
-  description = "Map of database names to their passwords"
+variable "connections_details" {
+  description = "Map of database names to their connection details"
   type = map(object({
+    host     = string
+    port     = number
+    db_name  = string
     username = string
     password = string
   }))
