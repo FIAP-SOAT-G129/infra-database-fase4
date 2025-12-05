@@ -4,6 +4,12 @@ resource "mongodbatlas_project" "this" {
   org_id = var.org_id
 }
 
+resource "mongodbatlas_project_ip_access_list" "nat" {
+  project_id = mongodbatlas_project.this.id
+  cidr_block = var.cidr_block
+  comment    = "NAT Gateway IP for Fastfood environment"
+}
+
 resource "mongodbatlas_advanced_cluster" "free_cluster" {
   project_id   = mongodbatlas_project.this.id
   name         = var.cluster_name
@@ -42,3 +48,5 @@ resource "mongodbatlas_database_user" "db_user" {
     type = "CLUSTER"
   }
 }
+
+

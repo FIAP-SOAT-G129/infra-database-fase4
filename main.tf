@@ -26,6 +26,7 @@ module "mongo" {
   db_name      = "orders_db"
   username     = var.mongo_username
   password     = var.mongo_password
+  cidr_block   = data.terraform_remote_state.foundation.outputs.nat_public_ip
 }
 
 module "secrets" {

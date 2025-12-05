@@ -14,6 +14,11 @@ variable "org_id" {
   type        = string
 }
 
+variable "cidr_block" {
+  description = "CIDR block for the NAT Gateway IP"
+  type        = string
+}
+
 variable "cluster_name" {
   description = "Name of the MongoDB Atlas cluster"
   type        = string
