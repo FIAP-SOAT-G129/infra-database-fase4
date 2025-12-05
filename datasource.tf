@@ -6,3 +6,5 @@ data "terraform_remote_state" "foundation" {
     region = "us-east-1"
   }
 }
+
+data "mongodbatlas_roles_org_id" "fastfood" {}

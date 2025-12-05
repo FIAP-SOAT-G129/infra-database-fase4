@@ -25,3 +25,26 @@ resource "aws_secretsmanager_secret_version" "dbs_credentials_version" {
   })
 }
 
+resource "aws_secretsmanager_secret" "mongo_connection" {
+  name        = "${var.name}-orders-db-secrets"
+  description = "MongoDB connection string for orders database"
+
+  recovery_window_in_days = 0
+
+  tags = merge(
+    var.tags,
+    { Name = "${var.name}-orders-db-secrets" }
+  )
+
+}
+
+resource "aws_secretsmanager_secret_version" "mongo_connection_version" {
+  secret_id = aws_secretsmanager_secret.mongo_connection.id
+  secret_string = jsonencode({
+    connection_string = var.mongo_connection_details.connection_string
+    db_name           = var.mongo_connection_details.db_name
+    db_username       = var.mongo_connection_details.username
+    db_password       = var.mongo_connection_details.password
+  })
+}
+

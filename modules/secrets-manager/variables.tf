@@ -14,6 +14,16 @@ variable "connections_details" {
   }))
 }
 
+variable "mongo_connection_details" {
+  description = "MongoDB connection string for orders database"
+  type = object({
+    connection_string = string
+    db_name           = string
+    username          = string
+    password          = string
+  })
+}
+
 variable "tags" {
   type    = map(string)
   default = {}

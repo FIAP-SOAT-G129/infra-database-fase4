@@ -18,10 +18,22 @@ module "security_group" {
   tags = var.tags
 }
 
-module "secrets" {
-  source              = "./modules/secrets-manager"
-  name                = var.name
-  connections_details = local.connections_details
+module "mongo" {
+  source       = "./modules/mongo"
+  org_id       = data.mongodbatlas_roles_org_id.fastfood.org_id
+  project_name = "${var.name}-orders-project"
+  cluster_name = "${var.name}-orders-cluster"
+  db_name      = var.mongo_db_name
+  username     = var.mongo_username
+  password     = var.mongo_password
+  cidr_block   = local.nat_cidr_block
+}
 
-  depends_on = [module.rds]
+module "secrets" {
+  source                   = "./modules/secrets-manager"
+  name                     = var.name
+  connections_details      = local.connections_details
+  mongo_connection_details = local.mongo_connection_details
+
+  depends_on = [module.mongo]
 }
