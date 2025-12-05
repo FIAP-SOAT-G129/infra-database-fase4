@@ -10,4 +10,12 @@ locals {
       }
     )
   }
+
+  mongo_connection_details = {
+    connection_string = module.mongo.connection_string
+    db_name           = "orders_db"
+    username          = var.mongo_username
+    password          = var.mongo_password
+  }
 }
+

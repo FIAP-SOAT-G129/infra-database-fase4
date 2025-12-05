@@ -16,6 +16,26 @@ variable "databases" {
   }))
 }
 
+variable "mongo_client_id" {
+  description = "MongoDB Atlas Client ID"
+  type        = string
+}
+
+variable "mongo_client_secret" {
+  description = "MongoDB Atlas Client Secret"
+  type        = string
+}
+
+variable "mongo_username" {
+  description = "Username for MongoDB database user"
+  type        = string
+}
+
+variable "mongo_password" {
+  description = "Password for MongoDB database user"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags padrão"
   type        = map(string)
