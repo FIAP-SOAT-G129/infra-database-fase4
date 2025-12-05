@@ -26,6 +26,11 @@ variable "mongo_client_secret" {
   type        = string
 }
 
+variable "mongo_db_name" {
+  description = "Name of the MongoDB database"
+  type        = string
+}
+
 variable "mongo_username" {
   description = "Username for MongoDB database user"
   type        = string

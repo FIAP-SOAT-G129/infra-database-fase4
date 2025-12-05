@@ -13,9 +13,11 @@ locals {
 
   mongo_connection_details = {
     connection_string = module.mongo.connection_string
-    db_name           = "orders_db"
+    db_name           = var.mongo_db_name
     username          = var.mongo_username
     password          = var.mongo_password
   }
+
+  nat_cidr_block = "${data.terraform_remote_state.foundation.outputs.nat_public_ip}/32"
 }
 

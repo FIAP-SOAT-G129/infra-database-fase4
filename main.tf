@@ -23,10 +23,10 @@ module "mongo" {
   org_id       = data.mongodbatlas_roles_org_id.fastfood.org_id
   project_name = "${var.name}-orders-project"
   cluster_name = "${var.name}-orders-cluster"
-  db_name      = "orders_db"
+  db_name      = var.mongo_db_name
   username     = var.mongo_username
   password     = var.mongo_password
-  cidr_block   = data.terraform_remote_state.foundation.outputs.nat_public_ip
+  cidr_block   = local.nat_cidr_block
 }
 
 module "secrets" {
